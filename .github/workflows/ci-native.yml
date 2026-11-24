@@ -28,6 +28,10 @@ jobs:
           echo "    if not hasattr(collections, attr):" >> "$SITE_PACKAGES/sitecustomize.py"
           echo "        setattr(collections, attr, getattr(collections.abc, attr))" >> "$SITE_PACKAGES/sitecustomize.py"
 
+      - name: Convert Python 2 code to Python 3
+        run: |
+          2to3 -w -n application/ manage.py
+
       - name: Initialize SQLite database
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/application:$(find $(pwd)/application -type d | tr '\n' ':')
