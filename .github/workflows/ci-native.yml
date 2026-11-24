@@ -17,11 +17,16 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
+      - name: Install dependencies and patch Python 3.10 compatibility
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install markupsafe==2.0.1
+          SITE_PACKAGES=$(python -c "import site; print(site.getsitepackages()[0])")
+          echo "import collections, collections.abc" > "$SITE_PACKAGES/sitecustomize.py"
+          echo "for attr in ['Mapping', 'MutableMapping', 'Iterable', 'Callable', 'Sequence']:" >> "$SITE_PACKAGES/sitecustomize.py"
+          echo "    if not hasattr(collections, attr):" >> "$SITE_PACKAGES/sitecustomize.py"
+          echo "        setattr(collections, attr, getattr(collections.abc, attr))" >> "$SITE_PACKAGES/sitecustomize.py"
 
       - name: Initialize SQLite database
         run: |
