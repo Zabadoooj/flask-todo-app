@@ -24,10 +24,12 @@ jobs:
 
       - name: Initialize SQLite database
         run: |
-          python -c "from app import db; db.create_all()"
+          python manage.py db init || true
+          python manage.py db migrate || true
+          python manage.py db upgrade || python -c "from manage import db; db.create_all()"
 
       - name: Smoke test Flask server
         run: |
-          python app.py &
+          python manage.py &
           sleep 5
           curl -I http://127.0.0.1:5000
