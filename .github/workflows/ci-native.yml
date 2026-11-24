@@ -26,7 +26,7 @@ jobs:
         run: |
           python manage.py db init || true
           python manage.py db migrate || true
-          python manage.py db upgrade || python -c "from manage import db; db.create_all()"
+          python manage.py db upgrade || python -c "from application import create_app,  db; app = create_app; app.app_context().push; db.create_all()"
 
       - name: Smoke test Flask server
         run: |
