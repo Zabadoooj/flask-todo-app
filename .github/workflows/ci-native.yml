@@ -15,7 +15,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.9'
 
       - name: Install dependencies
         run: |
@@ -24,12 +24,12 @@ jobs:
 
       - name: Initialize SQLite database
         run: |
-          python manage.py db init || true
-          python manage.py db migrate || true
-          python manage.py db upgrade || python -c "from application import create_app,  db; app = create_app; app.app_context().push; db.create_all()"
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/application
+          python manage.py db upgrade
 
       - name: Smoke test Flask server
         run: |
-          python manage.py &
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/application
+          python manage.py runserver &
           sleep 5
-          curl -I http://127.0.0.1:5000
+          curl -I http://127.0.0.1:7345
